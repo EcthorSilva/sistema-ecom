@@ -9,11 +9,20 @@ public class Usuario {
     private String grupo; // Grupos: Administrador ou Estoquista
     private boolean ativo; // 1 Ativo ou 0 Inativo
 
-    public Usuario() {
+    public Usuario() { // construtor vazio
 
     }
 
-    public Usuario(int id, String nome, String cpf, String email, String senha, String grupo, boolean ativo) {
+    public Usuario(String nome, String cpf, String email, String senha, String grupo, boolean ativo) { // construtor sem id
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.senha = senha;
+        this.grupo = grupo;
+        this.ativo = ativo;
+    }
+
+    public Usuario(int id, String nome, String cpf, String email, String senha, String grupo, boolean ativo) { // construtor com id
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -78,6 +87,4 @@ public class Usuario {
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
-
-    
 }

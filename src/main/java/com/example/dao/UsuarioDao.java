@@ -73,7 +73,7 @@ public class UsuarioDao {
     
 
     public void atualizarUsuario(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nome = ?, cpf = ?, grupo = ?, ativo = ? WHERE id = ?";
+        String sql = "UPDATE usuarios SET nome = ?, cpf = ?, grupo = ?, status = ? WHERE id = ?";
         try (Connection conn = ConexaoDB.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, usuario.getNome());

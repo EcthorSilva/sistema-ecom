@@ -84,6 +84,7 @@ public class Main {
                 sair = true;
             } else if (entrada.equals("i")) {
                 // função para incluir usuario aqui
+                incluirUsuario(usuarioLogado, input);
             } else {
                 int id = Integer.parseInt(entrada);
                 Usuario usuarioSelecionado = usuarioDao.buscarPorId(id);
@@ -98,6 +99,30 @@ public class Main {
             }
         }
         menuBackoffice(usuarioLogado, input);
+    }
+
+    private static void incluirUsuario(Usuario usuarioLogado, Scanner input){
+        System.out.printf("--- Incluir Usuário ---\n\n");
+
+        System.out.printf("Nome:");
+        String nome = input.nextLine();
+        System.out.printf("CPF: ");
+        String cpf = input.nextLine();
+        System.out.printf("Email: ");
+        String email = input.nextLine();
+        System.out.printf("Senha: ");
+        String senha = input.nextLine();
+        System.out.printf("Grupo (Administrador/Estoquista): ");
+        String grupo = input.nextLine();
+
+        if (!grupo.equalsIgnoreCase("Administrador") && !grupo.equalsIgnoreCase("Estoquista")) {
+            System.out.println("Grupo inválido.");
+            return;
+        }
+
+        Usuario usuario = new Usuario(nome, cpf, email, LoginService.encriptarSenha(senha), grupo, true);
+        usuarioDao.inserirUsuario(usuario);
+        System.out.println("Usuário inserido com sucesso.");
     }
 
     private static void mostrarOpcoesUsuario(Usuario usuarioSelecionado, Scanner scanner) {
@@ -177,7 +202,6 @@ public class Main {
             System.out.println("Usuário " + (usuarioSelecionado.isAtivo() ? "ativado" : "desativado") + " com sucesso.");
         }
     }
-
 
     public static void clearConsole() {
         System.out.print("\033[H\033[2J");
