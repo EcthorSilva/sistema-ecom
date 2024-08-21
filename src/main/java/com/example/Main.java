@@ -12,81 +12,95 @@ public class Main {
     private static UsuarioDao usuarioDao = new UsuarioDao();
 
     public static void main(String[] args) {
+        clearConsole();
         try (Scanner input = new Scanner(System.in)) {
-            System.out.printf("\n=== Tela de Login ===\n\n");
+            System.out.printf("\n--- Tela de Login ---\n\n");
             System.out.printf("Email: ");
             String email = input.nextLine();
             System.out.printf("Senha: ");
             String senha = input.nextLine();
 
-            Usuario usuarioLogado = loginService.autenticar(email, senha);
+            Usuario usuarioLogado = loginService.autenticar(email, senha); // validando se o usuario existe e se esta ativo
 
             if (usuarioLogado == null) {
                 System.out.printf("\nFalha na autenticação. Verifique seu email e senha.\n\n");
                 return;
             }
-
-            System.out.println("Bem-vindo, " + usuarioLogado.getNome());
-            mostrarMenu(usuarioLogado, input);
+            clearConsole();            
+            menuBackoffice(usuarioLogado, input);
         }
     }
 
-    private static void mostrarMenu(Usuario usuarioLogado, Scanner input) {
-        System.out.println("=== Menu Principal ===");
-        System.out.println("1. Listar Produtos (PERSONAS)");
-        if (usuarioLogado.getGrupo().equalsIgnoreCase("Administrador")) {
-            System.out.println("2. Listar Usuários");
-        }
+    private static void menuBackoffice(Usuario usuarioLogado, Scanner input) {
+        boolean sair = false;
 
-        int opcao = input.nextInt();
-        input.nextLine();
-
-        switch (opcao) {
-            case 1:
-                //listarProdutos();
-                break;
-            case 2:
-                if (usuarioLogado.getGrupo().equalsIgnoreCase("Administrador")) {
-                    listarUsuarios(input);
-                } else {
-                    System.out.println("Opção inválida.");
-                }
-                break;
-            default:
-                System.out.println("Opção inválida.");
-                break;
+        while (!sair) {
+            System.out.printf("--- Menu Principal Backoffice ---\n\n");
+    
+            System.out.printf("1. Listar Produtos\n2. Listar Usuários");
+            System.out.printf("\n\nDigite a opção desejada: ");
+            int opcao = input.nextInt();
+            input.nextLine();
+    
+            switch (opcao) {
+                case 1:
+                    // função para listar produtos
+                    break;
+                case 2:
+                    clearConsole();
+                    listarUsuarios(usuarioLogado, input);
+                    break;
+                default:
+                    clearConsole();
+                    System.out.printf("Opção inválida.\n\n");
+                    break;
+            }
         }
     }
 
-    private static void listarUsuarios(Scanner input) {
-        System.out.println("=== Lista de Usuários ===");
-        for (Usuario usuario : usuarioDao.listarUsuarios()) {
-            System.out.println("ID: " + usuario.getId() + ", Nome: " + usuario.getNome() + ", Email: " + usuario.getEmail() + ", Status: " + (usuario.isAtivo() ? "Ativo" : "Desativado") + ", Grupo: " + usuario.getGrupo());
-        }
+    // até o momento só lista os usuarios
+    private static void listarUsuarios(Usuario usuarioLogado, Scanner input) {
+        boolean sair = false;
 
-        System.out.print("Digite o ID do usuário para editar ou 0 para voltar: ");
-        int id = input.nextInt();
-        input.nextLine();
+        while (!sair) {
+            System.out.println("--- Lista de Usuários ---\n");
 
-        if (id == 0) {
-            return;
-        }
+            System.out.printf("%-5s %-20s %-30s %-10s %-10s%n", "ID", "Nome", "Email", "Status", "Grupo");
+            for (Usuario usuario : usuarioDao.listarUsuarios()) {
+                System.out.printf("%-5d %-20s %-30s %-10s %-10s%n",
+                        usuario.getId(),
+                        usuario.getNome(),
+                        usuario.getEmail(),
+                        usuario.isAtivo() ? "Ativo" : "Desativado",
+                        usuario.getGrupo());
+            }
 
-        Usuario usuarioSelecionado = usuarioDao.buscarPorEmail(String.valueOf(id));
-        if (usuarioSelecionado != null) {
-            mostrarOpcoesUsuario(usuarioSelecionado, input);
-        } else {
-            System.out.println("Usuário não encontrado.");
+            System.out.printf("\nDigite o ID do usuário para editar ou 0 para voltar ou i para incluir: ");
+
+            int id = input.nextInt();
+            input.nextLine();
+
+            Usuario usuarioSelecionado = usuarioDao.buscarPorEmail(String.valueOf(id));
+
+            if(id == 0){
+                clearConsole();
+                sair = true;
+            } else if (usuarioSelecionado != null) {
+                clearConsole();
+                mostrarOpcoesUsuario(usuarioSelecionado, input);
+            } else {
+                clearConsole();
+                System.out.printf("\nUsuário %d não encontrado.\n\n", id);
+            }
         }
+        menuBackoffice(usuarioLogado, input);
     }
 
     private static void mostrarOpcoesUsuario(Usuario usuarioSelecionado, Scanner scanner) {
-        System.out.println("=== Opções de Usuário ===");
-        System.out.println("1. Alterar Usuário");
-        System.out.println("2. Alterar Senha");
-        System.out.println("3. Ativar/Desativar Usuário");
-        System.out.println("0. Voltar");
+        System.out.printf("--- Opções de Usuário ---\n");
 
+        System.out.printf("\n1. Alterar Usuário\n2. Alterar Senha\n3. Ativar/Desativar Usuário\n0. Voltar\n");
+        System.out.printf("\n\nDigite a opção desejada: ");
         int opcao = scanner.nextInt();
         scanner.nextLine();
 
@@ -152,5 +166,11 @@ public class Main {
             usuarioDao.atualizarUsuario(usuarioSelecionado);
             System.out.println("Usuário " + (usuarioSelecionado.isAtivo() ? "ativado" : "desativado") + " com sucesso.");
         }
+    }
+
+
+    public static void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }

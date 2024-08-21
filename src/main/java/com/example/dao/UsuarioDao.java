@@ -89,7 +89,7 @@ public class UsuarioDao {
                 usuario.setCpf(rs.getString("cpf"));
                 usuario.setEmail(rs.getString("email"));
                 usuario.setGrupo(rs.getString("grupo"));
-                usuario.setAtivo(rs.getBoolean("ativo"));
+                usuario.setAtivo(rs.getBoolean("status"));
                 usuarios.add(usuario);
             }
         } catch (Exception e) {
