@@ -77,20 +77,24 @@ public class Main {
 
             System.out.printf("\nDigite o ID do usuário para editar ou 0 para voltar ou i para incluir: ");
 
-            int id = input.nextInt();
-            input.nextLine();
+            String entrada = input.nextLine().trim();
 
-            Usuario usuarioSelecionado = usuarioDao.buscarPorEmail(String.valueOf(id));
-
-            if(id == 0){
+            if (entrada.equals("0")) {
                 clearConsole();
                 sair = true;
-            } else if (usuarioSelecionado != null) {
-                clearConsole();
-                mostrarOpcoesUsuario(usuarioSelecionado, input);
+            } else if (entrada.equals("i")) {
+                // função para incluir usuario aqui
             } else {
-                clearConsole();
-                System.out.printf("\nUsuário %d não encontrado.\n\n", id);
+                int id = Integer.parseInt(entrada);
+                Usuario usuarioSelecionado = usuarioDao.buscarPorId(id);
+
+                if (usuarioSelecionado != null) {
+                    clearConsole();
+                    mostrarOpcoesUsuario(usuarioSelecionado, input);
+                } else {
+                    clearConsole();
+                    System.out.printf("\nUsuário %d não encontrado.\n\n", id);
+                }
             }
         }
         menuBackoffice(usuarioLogado, input);
@@ -106,17 +110,23 @@ public class Main {
 
         switch (opcao) {
             case 1:
+                clearConsole();
                 alterarUsuario(usuarioSelecionado, scanner);
                 break;
             case 2:
+                clearConsole();
                 alterarSenha(usuarioSelecionado, scanner);
                 break;
             case 3:
+                clearConsole();
                 ativarDesativarUsuario(usuarioSelecionado, scanner);
                 break;
             case 0:
+                clearConsole();
+                listarUsuarios(usuarioSelecionado, scanner);
                 return;
             default:
+                clearConsole();
                 System.out.println("Opção inválida.");
                 break;
         }
