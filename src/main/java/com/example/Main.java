@@ -91,7 +91,7 @@ public class Main {
 
                 if (usuarioSelecionado != null) {
                     clearConsole();
-                    mostrarOpcoesUsuario(usuarioSelecionado, input);
+                    listarDadosDoUsuario(usuarioSelecionado, usuarioLogado, input);
                 } else {
                     clearConsole();
                     System.out.printf("\nUsuário %d não encontrado.\n\n", id);
@@ -100,7 +100,7 @@ public class Main {
         }
         menuBackoffice(usuarioLogado, input);
     }
-
+    // não validado
     private static void incluirUsuario(Usuario usuarioLogado, Scanner input){
         System.out.printf("--- Incluir Usuário ---\n\n");
 
@@ -110,8 +110,20 @@ public class Main {
         String cpf = input.nextLine();
         System.out.printf("Email: ");
         String email = input.nextLine();
+        if (usuarioDao.buscarPorEmail(email) != null) {
+            clearConsole();
+            System.out.printf("\nEmail já cadastrado.\n\n");
+            return;
+        }
         System.out.printf("Senha: ");
         String senha = input.nextLine();
+        System.out.printf("Confirmar senha: ");
+        String confsenha = input.nextLine();
+
+        if (!senha.equals(confsenha)) {
+            System.out.println("As senhas não coincidem. Tente novamente.");
+            return;
+        }
         System.out.printf("Grupo (Administrador/Estoquista): ");
         String grupo = input.nextLine();
 
@@ -125,18 +137,27 @@ public class Main {
         System.out.println("Usuário inserido com sucesso.");
     }
 
-    private static void mostrarOpcoesUsuario(Usuario usuarioSelecionado, Scanner scanner) {
-        System.out.printf("--- Opções de Usuário ---\n");
-
+    private static void listarDadosDoUsuario(Usuario usuarioSelecionado, Usuario usuarioLogado, Scanner scanner) {
+        System.out.printf("--- Opções de Usuário ---\n\n");
+    
+        System.out.printf("%-5s %-20s %-20s %-20s %-10s %-10s%n", "ID", "Nome", "CPF", "Email", "Status", "Grupo");
+        System.out.printf("%-5d %-20s %-20s %-20s %-10s %-10s%n",
+                        usuarioSelecionado.getId(),
+                        usuarioSelecionado.getNome(),
+                        usuarioSelecionado.getCpf(),
+                        usuarioSelecionado.getEmail(),
+                        usuarioSelecionado.isAtivo() ? "Ativo" : "Desativado",
+                        usuarioSelecionado.getGrupo());
+    
         System.out.printf("\n1. Alterar Usuário\n2. Alterar Senha\n3. Ativar/Desativar Usuário\n0. Voltar\n");
         System.out.printf("\n\nDigite a opção desejada: ");
         int opcao = scanner.nextInt();
         scanner.nextLine();
-
+    
         switch (opcao) {
             case 1:
                 clearConsole();
-                alterarUsuario(usuarioSelecionado, scanner);
+                alterarUsuario(usuarioSelecionado, usuarioLogado, scanner);
                 break;
             case 2:
                 clearConsole();
@@ -156,8 +177,13 @@ public class Main {
                 break;
         }
     }
-
-    private static void alterarUsuario(Usuario usuarioSelecionado, Scanner scanner) {
+    
+    private static void alterarUsuario(Usuario usuarioSelecionado, Usuario usuarioLogado, Scanner scanner) {
+        // nao pode alterar o grupo (administrador/estoquista) do usuario logado corrigir depois
+        if (usuarioSelecionado.getId() == usuarioLogado.getId()) {
+            System.out.println("Você não pode alterar seus próprios dados.");
+            return;
+        }
         System.out.print("Novo Nome: ");
         usuarioSelecionado.setNome(scanner.nextLine());
         System.out.print("Novo CPF: ");
