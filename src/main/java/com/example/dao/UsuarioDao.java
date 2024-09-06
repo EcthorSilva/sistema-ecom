@@ -32,6 +32,29 @@ public class UsuarioDao {
         return null;
     }
 
+    public Usuario buscarPorCpf(String cpf) {
+        String sql = "SELECT * FROM usuarios WHERE cpf = ?";
+        try (Connection conn = ConexaoDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNome(rs.getString("nome"));
+                usuario.setCpf(rs.getString("cpf"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setSenha(rs.getString("senha"));
+                usuario.setGrupo(rs.getString("grupo"));
+                usuario.setAtivo(rs.getBoolean("status"));
+                return usuario;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Usuario buscarPorId(int id) {
         String sql = "SELECT * FROM usuarios WHERE id = ?";
         try (Connection conn = ConexaoDB.conectar();

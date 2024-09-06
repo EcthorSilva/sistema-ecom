@@ -108,6 +108,12 @@ public class Main {
         String nome = input.nextLine();
         System.out.printf("CPF: ");
         String cpf = input.nextLine();
+        if (usuarioDao.buscarPorCpf(cpf) != null) {
+            clearConsole();
+            System.out.printf("\nCPF já cadastrado.\n\n");
+            return;
+        }
+
         System.out.printf("Email: ");
         String email = input.nextLine();
         if (usuarioDao.buscarPorEmail(email) != null) {
@@ -115,6 +121,7 @@ public class Main {
             System.out.printf("\nEmail já cadastrado.\n\n");
             return;
         }
+
         System.out.printf("Senha: ");
         String senha = input.nextLine();
         System.out.printf("Confirmar senha: ");
