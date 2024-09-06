@@ -36,7 +36,12 @@ public class Main {
         while (!sair) {
             System.out.printf("--- Menu Principal Backoffice ---\n\n");
 
-            System.out.printf("1. Listar Produtos\n2. Listar Usuários");
+            if(usuarioLogado.getGrupo().equalsIgnoreCase("administrador")) {
+                System.out.printf("1. Listar Produtos\n2. Listar Usuários\n3. Sair");
+            } else {
+                System.out.printf("1. Listar Produtos\n2. Sair");
+            }
+            // System.out.printf("1. Listar Produtos\n2. Listar Usuários");
             System.out.printf("\n\nDigite a opção desejada: ");
             int opcao = input.nextInt();
             input.nextLine();
